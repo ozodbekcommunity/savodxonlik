@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raqamli Savodxonlik - E-Darslik</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lora Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        /* Maxsus scrollbar dizayni */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .lesson-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .active-nav-item {
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            border-right: 4px solid #1d4ed8;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body class="flex h-screen overflow-hidden">
+
+    <!-- Mobil menyu uchun orqa fon (overlay) -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar (Chap tomon menyusi) -->
+    <aside id="sidebar"
+        class="bg-white w-72 h-full flex flex-col border-r shadow-sm absolute lg:relative z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex-shrink-0">
+        <div class="p-6 border-b flex justify-between items-center bg-slate-50">
+            <div>
+                <h1 class="text-xl font-bold text-slate-800 tracking-tight">E-Darslik</h1>
+                <p class="text-sm text-slate-500 mt-1">Raqamli savodxonlik</p>
+            </div>
+            <button class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none" onclick="toggleSidebar()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto py-4" id="nav-container">
+            <!-- Menyu ro'yxati JS orqali shu yerga qo'shiladi -->
+        </div>
+    </aside>
+
+    <!-- Asosiy Qism -->
+    <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-slate-50/50">
+        <!-- Yuqori panel (Navbar) -->
+        <header class="bg-white border-b px-6 py-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+            <div class="flex items-center gap-4">
+                <button class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none"
+                    onclick="toggleSidebar()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <div
+                    class="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 hidden sm:block">
+                    O'quv dasturi (25 ta dars)
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                    O'
+                </div>
+                <span class="text-sm font-medium hidden sm:block">O'quvchi</span>
+            </div>
+        </header>
+
+        <!-- Dars kontenti -->
+        <div class="flex-1 overflow-y-auto p-6 md:p-10" id="main-content">
+            <div class="max-w-4xl mx-auto pb-20">
+                <!-- Sarlavha qismi -->
+                <div class="mb-10 animate-fade-in">
+                    <span id="lesson-number-badge"
+                        class="text-sm font-semibold tracking-wider text-blue-600 uppercase mb-3 block">1-dars</span>
+                    <h2 id="lesson-title" class="text-3xl md:text-4xl font-bold text-slate-900 leading-tight mb-4">Mavzu
+                        nomi yuklanmoqda...</h2>
+                    <div class="w-20 h-1.5 bg-blue-500 rounded-full mt-6 mb-8"></div>
+                    <p class="text-lg text-slate-600 leading-relaxed italic" id="lesson-intro">
+                        Ushbu darsda siz quyidagi kichik mavzular bilan tanishasiz.
+                    </p>
+                </div>
+
+                <!-- Kichik mavzular konteyneri -->
+                <div id="subtopics-container" class="space-y-8">
+                    <!-- Kichik mavzular JS orqali qo'shiladi -->
+                </div>
+
+                <!-- Navigatsiya tugmalari (Oldingi/Keyingi) -->
+                <div
+                    class="mt-16 pt-8 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <button id="prev-btn" onclick="changeLesson(currentLessonId - 1)"
+                        class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Oldingi dars
+                    </button>
+                    <button id="next-btn" onclick="changeLesson(currentLessonId + 1)"
+                        class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 border border-transparent rounded-lg text-white hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                        Keyingi dars
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript Mantiq -->
+    <script>
+        // Barcha 25 ta dars va ularning ichki mavzulari ro'yxati
+        const lessonsData = [
+            {
+                id: 1,
+                mainTitle: "Kompyuter va algoritmik o'yinlar",
+                subtopics: [
+                    { title: "Kompyuter – qanday ishlaydi?", content: "Kompyuterning ishlash tamoyillari, xotira, protsessor va axborotni qayta ishlash jarayonlari haqida tushuncha." },
+                    { title: "Klaviatura bilan to'g'ri ishlash", content: "Barmoqlarni to'g'ri joylashtirish, tezkor tugmalar (hotkeys) va 10 barmoqda tez yozish usullari." },
+                    { title: "Algoritmik o'yinlar bilan tanishuv", content: "Mantiqni o'stirish uchun mo'ljallangan boshlang'ich algoritmik o'yinlar va ularning dasturlashdagi ahamiyati." }
+                ]
+            },
+            {
+                id: 2,
+                mainTitle: "Internet va qidiruv tizimlari",
+                subtopics: [
+                    { title: "Internet nima? Brauzerlar qanday ishlaydi?", content: "Global tarmoqning tuzilishi, veb-sahifalarni ko'rish dasturlari (Chrome, Safari, Firefox) va ularning vazifalari." },
+                    { title: "Raqamli iz", content: "Internetda qoldiradigan ma'lumotlarimiz, ularning xavfsizligi va raqamli reputatsiya tushunchasi." },
+                    { title: "Google'dan to'g'ri qidirish qoidalari", content: "Qidiruv operatorlari, aniq ma'lumotni tez va ishonchli manbalardan topish sirlari." }
+                ]
+            },
+            {
+                id: 3,
+                mainTitle: "Diqqatni jamlash va vaqtni boshqarish",
+                subtopics: [
+                    { title: "Diqqatni jamlash. Pomodoro texnikasi", content: "Fokusni yo'qotmaslik uchun 25 daqiqalik ish va 5 daqiqalik tanaffus qoidasi asosida ishlash." },
+                    { title: "Vaqtni to'g'ri taqsimlash", content: "Muhim va shoshilinch ishlarni ajratish, kunlik reja tuzish va unumdorlikni oshirish." },
+                    { title: "Fayllar va papkalarni to'g'ri sozlash", content: "Kompyuterda ma'lumotlarni tartibli saqlash, papkalarni tizimlashtirish va kerakli faylni tez topish." }
+                ]
+            },
+            {
+                id: 4,
+                mainTitle: "Xavfsizlik va himoyalanish",
+                subtopics: [
+                    { title: "Mustahkam parol yaratish. 2FA", content: "Buzish qiyin bo'lgan parollar o'ylab topish va Ikki bosqichli autentifikatsiya (2FA) haqida." },
+                    { title: "Yolg'on saytlardan himoyalanish", content: "SSL sertifikati, sayt manzilini tekshirish va firibgar saytlarni haqiqiysidan ajratish." },
+                    { title: "Reklamalarni o'chirish va Fishing", content: "Adblocker'lar bilan ishlash va ma'lumot o'g'irlashga qaratilgan 'Fishing' hujumlaridan saqlanish." }
+                ]
+            },
+            {
+                id: 5,
+                mainTitle: "Axborot va media savodxonlik",
+                subtopics: [
+                    { title: "Axborot qanday tarqaladi?", content: "Ijtimoiy tarmoqlar va OAV orqali xabarlarning tarqalish tezligi va usullari." },
+                    { title: "Klikbeyt (Clickbait). Fakt va fikr", content: "E'tiborni tortuvchi yolg'on sarlavhalarni aniqlash, obyektiv faktni shaxsiy fikrdan ajrata olish." },
+                    { title: "Rasm va videolarni haqiqiyligini tekshirish", content: "Deepfake videolarni va feyk rasmlarni maxsus dasturlar hamda teskari qidiruv yordamida fosh qilish." }
+                ]
+            },
+            {
+                id: 6,
+                mainTitle: "Dasturlar, OS va fayllar",
+                subtopics: [
+                    { title: "Internetdan fayllarni yuklash qoidalari", content: "Virus tushirmasdan ishonchli manbalardan dastur, kitob va mediani yuklab olish qoidalari." },
+                    { title: "Dastur turlari", content: "Pullik, bepul va ochiq kodli (open-source) dasturlarning farqlari." },
+                    { title: "OS haqida tushuncha", content: "Operatsion tizimlar (Windows, macOS, Linux, Android, iOS) nima va ular qanday ishlaydi?" }
+                ]
+            },
+            {
+                id: 7,
+                mainTitle: "Raqamli aloqa madaniyati",
+                subtopics: [
+                    { title: "Pochta ochish", content: "Gmail yoki boshqa xizmatlarda xavfsiz elektron pochta ochish va uni sozlash." },
+                    { title: "E-mail yozish madaniyati", content: "Rasmiy xatlar yozish qoidalari, sarlavha (Subject) yozish va imzo qo'yish odoblari." },
+                    { title: "Videoqo'ng'iroqlar", content: "Zoom, Google Meet kabi dasturlarda qatnashish qoidalari, mikrofon va kamerani boshqarish." }
+                ]
+            },
+            {
+                id: 8,
+                mainTitle: "Ijtimoiy tarmoqlar va etika",
+                subtopics: [
+                    { title: "Guruhlarda o'zini qanday tutish", content: "Telegram, WhatsApp yoki boshqa guruhlarda yozishish odoblari, spam tarqatmaslik." },
+                    { title: "Izohlar va xatolar bilan ishlash", content: "Internetda konstruktiv tanqid qilish, xatolarni to'g'ri qabul qilish va kiberbullingdan uzoq bo'lish." },
+                    { title: "Kiberjavobgarlik", content: "Internetdagi xatti-harakatlar uchun huquqiy va ma'naviy javobgarlik hissi." }
+                ]
+            },
+            {
+                id: 9,
+                mainTitle: "Sun'iy intellekt va Ijod",
+                subtopics: [
+                    { title: "Sun'iy intellekt nima o'zi?", content: "AI (Artificial Intelligence) haqida oddiy tushunchalar va uning ishlash mexanizmlari." },
+                    { title: "AI botlar bilan muloqot madaniyati", content: "ChatGPT kabi botlarga to'g'ri so'rov (prompt) berish usullari." },
+                    { title: "AI va Ijod. AI va Plagiat", content: "AIdan yordamchi sifatida foydalanish va birovning yoki neyrotarmoqning ishini o'zlashtirib olmaslik (plagiat) masalalari." }
+                ]
+            },
+            {
+                id: 10,
+                mainTitle: "AI chegaralari va ko'rinmas AI",
+                subtopics: [
+                    { title: "AI qila olmaydigan narsalar", content: "Sun'iy intellektning cheklovlari, inson hissiyoti va kreativligining o'rni." },
+                    { title: "Ovoz, rasm va yuzni tanuvchi dasturlar", content: "Biometrik texnologiyalar qanday ishlaydi va ular qayerlarda qo'llaniladi?" },
+                    { title: "Kundalik hayotimizdagi ko'rinmas AI", content: "Biz sezmaydigan, lekin har kuni foydalanadigan AI tizimlari (masalan, TikTok yoki YouTube tavsiyalari)." }
+                ]
+            },
+            {
+                id: 11,
+                mainTitle: "Kelajak kasblari",
+                subtopics: [
+                    { title: "Kelajak kasblari bilan tanishuv", content: "Texnologiya rivojlanishi bilan yo'qolib borayotgan kasblar va o'rniga kirib kelayotgan yangi IT hamda raqamli sohalar (Data Scientist, AI Engineer va h.k.)." }
+                ]
+            },
+            {
+                id: 12,
+                mainTitle: "Dizayn asoslari va Taqdimotlar",
+                subtopics: [
+                    { title: "Canva. Dizayn asoslari", content: "Canva dasturida ishlash, ranglar uyg'unligi va shriftlarni to'g'ri tanlash qoidalari." },
+                    { title: "Zerikarli taqdimotlar", content: "Slaydlarni matn bilan to'ldirib tashlamaslik, vizual elementlardan foydalanish sirlari." },
+                    { title: "Infografika nima?", content: "Katta va murakkab ma'lumotlarni chiroyli hamda tushunarli grafik ko'rinishida taqdim etish usullari." }
+                ]
+            },
+            {
+                id: 13,
+                mainTitle: "Algoritm va Mantiq",
+                subtopics: [
+                    { title: "Algoritm o'zi nima?", content: "Har qanday ishni bajarish bo'yicha ketma-ketlik va ko'rsatmalar to'plami." },
+                    { title: "\"Filni bo'laklab yeyish\" qoidasi", content: "Katta va murakkab muammolarni kichik qismlarga (sub-problems) ajratib yechish texnikasi." },
+                    { title: "Qonuniyatlarni topish", content: "Ma'lumotlar orasidagi takrorlanuvchi holatlarni (patterns) ilg'ab olish qobiliyati." }
+                ]
+            },
+            {
+                id: 14,
+                mainTitle: "Shartlar va qaror qabul qilish",
+                subtopics: [
+                    { title: "\"Agar... u holda...\" (If... Else...) qoidasi", content: "Dasturlashdagi shart operatorlari va hayotdagi qonuniyatlar o'rtasidagi bog'liqlik." },
+                    { title: "Shartlarni to'g'ri ishlata olish", content: "Mantiqiy shartlar tuzish orqali jarayonlarni avtomatlashtirish haqida." }
+                ]
+            },
+            {
+                id: 15,
+                mainTitle: "Tsikl (Loop) haqida tushuncha",
+                subtopics: [
+                    { title: "Tsikl o'zi nima?", content: "Takrorlanuvchi jarayonlar va ularni dasturlash orqali yengillashtirish." },
+                    { title: "Biz qanday bir xil ishni takrorlaymiz?", content: "For va While tsikllarining asosiy mantiqiy ma'nosi va amaliyotdagi ko'rinishlari." }
+                ]
+            },
+            {
+                id: 16,
+                mainTitle: "Blok-sxemalar va chiziqli dasturlash",
+                subtopics: [
+                    { title: "Flowchart (Blok-sxema)", content: "Jarayonlarning vizual xaritasini geometrik shakllar yordamida chizish." },
+                    { title: "Chiziqli dasturlash", content: "Hech qanday shart va tsikllarsiz, bir chiziq bo'ylab qat'iy ketma-ketlikda ishlaydigan dasturlar." }
+                ]
+            },
+            {
+                id: 17,
+                mainTitle: "Funksiya",
+                subtopics: [
+                    { title: "Funksiya - o'zi nima ekan?", content: "Kodni qayta-qayta yozmaslik uchun ma'lum bir vazifani bajaruvchi nomlangan qismlar (bloklar) yaratish tushunchasi." }
+                ]
+            },
+            {
+                id: 18,
+                mainTitle: "Raqamli moliya va to'lovlar",
+                subtopics: [
+                    { title: "Pullar qanday qilib qog'ozdan raqamga aylandi?", content: "Elektron pullar, bank kartalari va ularning evolyutsiyasi." },
+                    { title: "Internetdagi xaridlar xavfsizligi", content: "Karta ma'lumotlarini qayerga kiritish mumkin va qayerga mumkin emas? CVV va SMS kodni himoyalash." },
+                    { title: "Obunalar (Subscriptions) tuzog'i", content: "Kartani ulab qo'ygandan keyin oylik pul yechib oladigan xizmatlar va ularni nazorat qilish." }
+                ]
+            },
+            {
+                id: 19,
+                mainTitle: "Onlayn xavflar va qimor platformalari",
+                subtopics: [
+                    { title: "Onlayn firibgarlarning psixologiyasi", content: "Firibgarlar insonlarni ishonchiga qanday kirishi va psixologik manipulyatsiya sirlari." },
+                    { title: "Bukmeker platformalarning ishlash prinsipi", content: "Qimor va totalizator saytlarining matematik tuzilishi va nima uchun doim faqat tashkilotchi yutishini tushunish." }
+                ]
+            },
+            {
+                id: 20,
+                mainTitle: "Frilanserlik va Kraudfanding",
+                subtopics: [
+                    { title: "Frilanserlik nima?", content: "Erkin ishchi bo'lish, masofadan turib ishlash va Upwork, Fiverr kabi platformalar bilan tanishuv." },
+                    { title: "Kraudfanding (Crowdfunding) nima?", content: "Yangi g'oya yoki startaplar uchun xalqdan oz-ozdan pul yig'ish platformalari (masalan, Kickstarter)." }
+                ]
+            },
+            {
+                id: 21,
+                mainTitle: "O'rganish va Xotira",
+                subtopics: [
+                    { title: "Xotirani kuchaytirish dasturlari", content: "Ma'lumotlarni yaxshi eslab qolish uchun Anki va Spaced Repetition (Interval takrorlash) tizimlari." },
+                    { title: "Foydali odatlar shakllantirish", content: "Micro-learning, har kuni oz-ozdan o'rganish va habit-tracker'lardan foydalanish." },
+                    { title: "Har qanday murakkab mavzularni o'rganish", content: "Feynman texnikasi: Murakkab mavzuni tushunish uchun uni yosh bolaga tushuntirgandek osonlashtirish." }
+                ]
+            },
+            {
+                id: 22,
+                mainTitle: "Dunyoni onlayn organish",
+                subtopics: [
+                    { title: "Dunyoni ekrandan o'rganish", content: "Google Earth, virtual muzeylar va ta'lim platformalari orqali uydan chiqmay sayohat va ta'lim." },
+                    { title: "Xaritalar bilan ishlash", content: "Google Maps, Yandex Maps dasturlaridan samarali foydalanish, lokatsiya ulashish va marshrut tuzish." }
+                ]
+            },
+            {
+                id: 23,
+                mainTitle: "Rivojlanish va texnologiyalar",
+                subtopics: [
+                    { title: "Audiokitoblar va podkastlar dunyosi", content: "Vaqtdan unumli foydalanish maqsadida yo'lda yoki ish paytida audio kontent eshitish." },
+                    { title: "Shaxsiy 'o'sish xaritasi' (roadmap)", content: "O'zining kelajakdagi rivojlanish rejasini bosqichma-bosqich tuzib chiqish." },
+                    { title: "Zamonaviy texnologiyalar", content: "Hayotimizga endigina kirib kelayotgan innovatsion yechimlar haqida umumiy tushuncha." }
+                ]
+            },
+            {
+                id: 24,
+                mainTitle: "Kelajak texnologiyalari",
+                subtopics: [
+                    { title: "Aqlli uylar (IoT)", content: "Internet of Things - buyumlar interneti. Uy jihozlarining bir-biri bilan aloqasi." },
+                    { title: "AR va VR", content: "Kengaytirilgan (AR) va Virtual (VR) reallikning ta'lim va tibbiyotdagi o'rni." },
+                    { title: "3D printerlar olami va Kosmik texnologiyalar", content: "Detallarni chop etish texnologiyalari va SpaceX kabi kompaniyalarning kosmosdagi yangiliklari." }
+                ]
+            },
+            {
+                id: 25,
+                mainTitle: "Jamoaviy ishlash",
+                subtopics: [
+                    { title: "Jamoaviy ishlash qoidalari", content: "Trello, Slack, Google Docs kabi jamoaviy ishlash platformalarida umumiy loyihalarni boshqarish odobi va qoidalari." }
+                ]
+            }
+        ];
+
+        let currentLessonId = 1;
+
+        // Sahifa yuklanganda bajariladigan ishlar
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSidebar();
+            loadLesson(currentLessonId);
+        });
+
+        // Sidebar (menyu)ni chizish
+        function renderSidebar() {
+            const navContainer = document.getElementById('nav-container');
+            navContainer.innerHTML = ''; // Tozalash
+
+            lessonsData.forEach(lesson => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left px-6 py-3 border-b border-slate-100 transition-colors text-sm hover:bg-slate-50 focus:outline-none flex flex-col nav-item-${lesson.id}`;
+                btn.onclick = () => {
+                    loadLesson(lesson.id);
+                    // Mobilda menyuni yopish
+                    if (window.innerWidth < 1024) {
+                        toggleSidebar();
+                    }
+                };
+
+                btn.innerHTML = `
+                    <span class="text-xs font-bold uppercase tracking-wider mb-1 ${lesson.id === currentLessonId ? 'text-blue-600' : 'text-slate-400'}">
+                        ${lesson.id}-dars
+                    </span>
+                    <span class="truncate w-full leading-relaxed ${lesson.id === currentLessonId ? 'text-blue-700 font-semibold' : 'text-slate-600'}">
+                        ${lesson.mainTitle}
+                    </span>
+                `;
+
+                navContainer.appendChild(btn);
+            });
+            updateActiveState(currentLessonId);
+        }
+
+        // Muayyan darsni ekranga yuklash
+        function loadLesson(id) {
+            // ID ni tekshirish
+            if (id < 1 || id > lessonsData.length) return;
+
+            const lesson = lessonsData.find(l => l.id === id);
+            currentLessonId = lesson.id;
+
+            // DOM elementlarini topish
+            const badge = document.getElementById('lesson-number-badge');
+            const title = document.getElementById('lesson-title');
+            const subtopicsContainer = document.getElementById('subtopics-container');
+
+            // Sarlavhalarni yangilash
+            badge.textContent = `${lesson.id}-DARS`;
+            title.textContent = lesson.mainTitle;
+
+            // Animatsiyani qayta ishga tushirish uchun kichik hiyla
+            const headerBlock = badge.parentElement;
+            headerBlock.classList.remove('animate-pulse');
+            void headerBlock.offsetWidth; // trigger reflow
+            headerBlock.classList.add('animate-fade-in');
+
+            // Kichik mavzularni chizish
+            subtopicsContainer.innerHTML = '';
+
+            lesson.subtopics.forEach((sub, index) => {
+                const card = document.createElement('div');
+                card.className = "lesson-card bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden";
+
+                // Dekorativ chap chiziq
+                const indicator = document.createElement('div');
+                indicator.className = "absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-400 to-indigo-600 rounded-l-2xl";
+
+                card.appendChild(indicator);
+
+                card.innerHTML += `
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold font-sans text-sm border border-blue-100 mt-1">
+                            ${index + 1}
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-slate-800 mb-3">${sub.title}</h3>
+                            <p class="text-slate-600 leading-relaxed">${sub.content}</p>
+                            
+                            <!-- Interaktiv 'Batafsil' tugmasi (shunchaki UI uchun) -->
+                            <button class="mt-4 text-sm font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors group">
+                                O'qishni boshlash
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                subtopicsContainer.appendChild(card);
+            });
+
+            // Tugmalar holatini yangilash
+            document.getElementById('prev-btn').disabled = (id === 1);
+            document.getElementById('next-btn').disabled = (id === lessonsData.length);
+
+            // Menyudagi aktiv holatni yangilash
+            updateActiveState(id);
+
+            // Yuqoriga qaytarish
+            document.getElementById('main-content').scrollTop = 0;
+        }
+
+        // Menyudagi aktiv dars ranglarini yangilash
+        function updateActiveState(id) {
+            const allItems = document.querySelectorAll('#nav-container button');
+            allItems.forEach(item => {
+                item.classList.remove('active-nav-item', 'bg-blue-50');
+                // Ichidagi text ranglarini default qilish
+                const span1 = item.querySelector('span:first-child');
+                const span2 = item.querySelector('span:last-child');
+                if (span1 && span2) {
+                    span1.className = `text-xs font-bold uppercase tracking-wider mb-1 text-slate-400`;
+                    span2.className = `truncate w-full leading-relaxed text-slate-600`;
+                }
+            });
+
+            const activeItem = document.querySelector(`.nav-item-${id}`);
+            if (activeItem) {
+                activeItem.classList.add('active-nav-item');
+                // Aktiv holatdagi text ranglari
+                const span1 = activeItem.querySelector('span:first-child');
+                const span2 = activeItem.querySelector('span:last-child');
+                if (span1 && span2) {
+                    span1.className = `text-xs font-bold uppercase tracking-wider mb-1 text-blue-600`;
+                    span2.className = `truncate w-full leading-relaxed text-blue-700 font-semibold`;
+                }
+
+                // Menyuni avtomatik pastga surish (scroll into view)
+                activeItem.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+        }
+
+        // Mobil menyu uchun ochish/yopish funksiyasi
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+
+</html>
