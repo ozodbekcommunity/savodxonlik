@@ -1,154 +1,204 @@
 <!DOCTYPE html>
 <html lang="uz">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raqamli Savodxonlik - E-Darslik</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lora Font -->
+    <!-- Fonts: Inter for UI, Lora for reading content -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.4s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(15px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
         body {
-            font-family: 'Lora', serif;
             background-color: #f8fafc;
-            color: #334155;
+            color: #0f172a;
         }
-
+        
         /* Maxsus scrollbar dizayni */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
-
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: transparent; 
         }
-
         ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
+            background: #cbd5e1; 
+            border-radius: 10px;
         }
-
         ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+            background: #94a3b8; 
         }
 
         .lesson-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         .lesson-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border-color: #e2e8f0;
+        }
+        
+        .active-nav-item {
+            background-color: #eef2ff;
+            color: #4f46e5;
+            position: relative;
+        }
+        .active-nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #4f46e5;
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
         }
 
-        .active-nav-item {
-            background-color: #eff6ff;
-            color: #1d4ed8;
-            border-right: 4px solid #1d4ed8;
-            font-weight: 600;
+        .content-transition {
+            opacity: 0;
         }
     </style>
 </head>
-
-<body class="flex h-screen overflow-hidden">
+<body class="flex h-screen overflow-hidden font-sans antialiased text-slate-800">
 
     <!-- Mobil menyu uchun orqa fon (overlay) -->
-    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+    <div id="mobile-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity" onclick="toggleSidebar()"></div>
 
     <!-- Sidebar (Chap tomon menyusi) -->
-    <aside id="sidebar"
-        class="bg-white w-72 h-full flex flex-col border-r shadow-sm absolute lg:relative z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex-shrink-0">
-        <div class="p-6 border-b flex justify-between items-center bg-slate-50">
-            <div>
-                <h1 class="text-xl font-bold text-slate-800 tracking-tight">E-Darslik</h1>
-                <p class="text-sm text-slate-500 mt-1">Raqamli savodxonlik</p>
+    <aside id="sidebar" class="bg-white w-80 h-full flex flex-col border-r border-slate-200 shadow-[4px_0_24px_rgba(0,0,0,0.02)] absolute lg:relative z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex-shrink-0">
+        <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white shadow-lg shadow-primary-500/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 tracking-tight leading-none">E-Darslik</h1>
+                    <p class="text-xs font-medium text-slate-500 mt-1">Raqamli savodxonlik</p>
+                </div>
             </div>
-            <button class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none" onclick="toggleSidebar()">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
+            <button class="lg:hidden text-slate-400 hover:text-slate-700 focus:outline-none bg-slate-50 p-2 rounded-lg" onclick="toggleSidebar()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
-
-        <div class="flex-1 overflow-y-auto py-4" id="nav-container">
+        
+        <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1" id="nav-container">
             <!-- Menyu ro'yxati JS orqali shu yerga qo'shiladi -->
         </div>
     </aside>
 
     <!-- Asosiy Qism -->
-    <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-slate-50/50">
+    <main class="flex-1 flex flex-col h-full relative overflow-hidden bg-[#f8fafc]">
+        
         <!-- Yuqori panel (Navbar) -->
-        <header class="bg-white border-b px-6 py-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+        <header class="bg-white/80 backdrop-blur-lg border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
             <div class="flex items-center gap-4">
-                <button class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none"
-                    onclick="toggleSidebar()">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
+                <button class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none bg-white p-2 border border-slate-200 rounded-lg shadow-sm" onclick="toggleSidebar()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
-                <div
-                    class="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 hidden sm:block">
-                    O'quv dasturi (25 ta dars)
+                <div class="hidden sm:flex items-center gap-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">O'quv dasturi</span>
+                    <span class="px-2.5 py-1 rounded-full bg-primary-50 text-primary-700 text-xs font-bold border border-primary-100">25 ta dars</span>
                 </div>
             </div>
             <div class="flex items-center gap-3">
-                <div
-                    class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                    O'
+                <div class="text-right hidden sm:block">
+                    <p class="text-sm font-semibold text-slate-800 leading-none">Faol o'quvchi</p>
+                    <p class="text-xs text-slate-500 mt-1">Jarayon: <span id="progress-text" class="text-primary-600 font-bold">4%</span></p>
                 </div>
-                <span class="text-sm font-medium hidden sm:block">O'quvchi</span>
+                <div class="w-9 h-9 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center text-primary-600 font-bold text-sm overflow-hidden">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=eef2ff" alt="Avatar" class="w-full h-full object-cover" onerror="this.src=''; this.innerHTML='O'">
+                </div>
             </div>
         </header>
 
+        <!-- Progress bar -->
+        <div class="h-1 w-full bg-slate-100 relative z-30">
+            <div id="progress-bar" class="h-full bg-primary-500 transition-all duration-500 ease-out" style="width: 4%;"></div>
+        </div>
+
         <!-- Dars kontenti -->
-        <div class="flex-1 overflow-y-auto p-6 md:p-10" id="main-content">
-            <div class="max-w-4xl mx-auto pb-20">
+        <div class="flex-1 overflow-y-auto p-6 md:p-10 lg:p-12 relative" id="main-content">
+            <!-- Dekorativ orqa fon elementlari -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-primary-400 opacity-5 rounded-full blur-3xl pointer-events-none transform translate-x-1/2 -translate-y-1/2"></div>
+            
+            <div class="max-w-3xl mx-auto pb-24 relative" id="lesson-container">
                 <!-- Sarlavha qismi -->
-                <div class="mb-10 animate-fade-in">
-                    <span id="lesson-number-badge"
-                        class="text-sm font-semibold tracking-wider text-blue-600 uppercase mb-3 block">1-dars</span>
-                    <h2 id="lesson-title" class="text-3xl md:text-4xl font-bold text-slate-900 leading-tight mb-4">Mavzu
-                        nomi yuklanmoqda...</h2>
-                    <div class="w-20 h-1.5 bg-blue-500 rounded-full mt-6 mb-8"></div>
-                    <p class="text-lg text-slate-600 leading-relaxed italic" id="lesson-intro">
-                        Ushbu darsda siz quyidagi kichik mavzular bilan tanishasiz.
+                <div class="mb-10 content-transition">
+                    <div class="inline-flex items-center gap-2 mb-4">
+                        <span class="flex items-center justify-center w-6 h-6 rounded-full bg-primary-100 text-primary-700 text-xs font-bold shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+                            </svg>
+                        </span>
+                        <span id="lesson-number-badge" class="text-sm font-bold tracking-widest text-primary-600 uppercase">1-dars</span>
+                    </div>
+                    
+                    <!-- Lora shrifti asosan sarlavha va matnlar uchun ishlatiladi -->
+                    <h2 id="lesson-title" class="font-serif text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 leading-[1.2] mb-5">Mavzu nomi yuklanmoqda...</h2>
+                    
+                    <p class="font-serif text-lg md:text-xl text-slate-600 leading-relaxed" id="lesson-intro">
+                        Ushbu dars davomida raqamli savodxonlikning muhim asoslari bilan bosqichma-bosqich tanishib chiqamiz.
                     </p>
                 </div>
 
                 <!-- Kichik mavzular konteyneri -->
-                <div id="subtopics-container" class="space-y-8">
+                <div id="subtopics-container" class="space-y-6 content-transition font-serif">
                     <!-- Kichik mavzular JS orqali qo'shiladi -->
                 </div>
 
                 <!-- Navigatsiya tugmalari (Oldingi/Keyingi) -->
-                <div
-                    class="mt-16 pt-8 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <button id="prev-btn" onclick="changeLesson(currentLessonId - 1)"
-                        class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-                                clip-rule="evenodd" />
+                <div class="mt-16 pt-8 border-t border-slate-200/60 flex flex-col sm:flex-row justify-between items-center gap-4 content-transition">
+                    <button id="prev-btn" onclick="loadLesson(currentLessonId - 1)" class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3.5 bg-white border border-slate-200 rounded-xl text-slate-600 font-medium hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-slate-200 group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform group-hover:-translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                         </svg>
                         Oldingi dars
                     </button>
-                    <button id="next-btn" onclick="changeLesson(currentLessonId + 1)"
-                        class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 border border-transparent rounded-lg text-white hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button id="next-btn" onclick="loadLesson(currentLessonId + 1)" class="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 bg-primary-600 border border-transparent rounded-xl text-white font-medium hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-600/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed group">
                         Keyingi dars
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd"
-                                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
-                                clip-rule="evenodd" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
                         </svg>
                     </button>
                 </div>
@@ -379,7 +429,6 @@
 
         // Sahifa yuklanganda bajariladigan ishlar
         document.addEventListener('DOMContentLoaded', () => {
-            renderSidebar();
             loadLesson(currentLessonId);
         });
 
@@ -390,34 +439,37 @@
 
             lessonsData.forEach(lesson => {
                 const btn = document.createElement('button');
-                btn.className = `w-full text-left px-6 py-3 border-b border-slate-100 transition-colors text-sm hover:bg-slate-50 focus:outline-none flex flex-col nav-item-${lesson.id}`;
+                btn.className = `w-full text-left px-4 py-3 rounded-xl transition-all duration-200 text-sm hover:bg-slate-50 focus:outline-none flex flex-col group nav-item-${lesson.id}`;
                 btn.onclick = () => {
                     loadLesson(lesson.id);
                     // Mobilda menyuni yopish
-                    if (window.innerWidth < 1024) {
+                    if(window.innerWidth < 1024) {
                         toggleSidebar();
                     }
                 };
-
+                
                 btn.innerHTML = `
-                    <span class="text-xs font-bold uppercase tracking-wider mb-1 ${lesson.id === currentLessonId ? 'text-blue-600' : 'text-slate-400'}">
-                        ${lesson.id}-dars
-                    </span>
-                    <span class="truncate w-full leading-relaxed ${lesson.id === currentLessonId ? 'text-blue-700 font-semibold' : 'text-slate-600'}">
-                        ${lesson.mainTitle}
-                    </span>
+                    <div class="flex items-start gap-3 w-full">
+                        <div class="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${lesson.id === currentLessonId ? 'bg-primary-100 text-primary-700' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
+                            ${lesson.id}
+                        </div>
+                        <div class="flex-1 overflow-hidden pt-1">
+                            <span class="block truncate w-full leading-tight ${lesson.id === currentLessonId ? 'text-primary-700 font-semibold' : 'text-slate-600 font-medium group-hover:text-slate-900'}">
+                                ${lesson.mainTitle}
+                            </span>
+                        </div>
+                    </div>
                 `;
-
+                
                 navContainer.appendChild(btn);
             });
-            updateActiveState(currentLessonId);
         }
 
         // Muayyan darsni ekranga yuklash
         function loadLesson(id) {
             // ID ni tekshirish
-            if (id < 1 || id > lessonsData.length) return;
-
+            if(id < 1 || id > lessonsData.length) return;
+            
             const lesson = lessonsData.find(l => l.id === id);
             currentLessonId = lesson.id;
 
@@ -425,107 +477,98 @@
             const badge = document.getElementById('lesson-number-badge');
             const title = document.getElementById('lesson-title');
             const subtopicsContainer = document.getElementById('subtopics-container');
-
-            // Sarlavhalarni yangilash
-            badge.textContent = `${lesson.id}-DARS`;
-            title.textContent = lesson.mainTitle;
-
-            // Animatsiyani qayta ishga tushirish uchun kichik hiyla
-            const headerBlock = badge.parentElement;
-            headerBlock.classList.remove('animate-pulse');
-            void headerBlock.offsetWidth; // trigger reflow
-            headerBlock.classList.add('animate-fade-in');
-
-            // Kichik mavzularni chizish
-            subtopicsContainer.innerHTML = '';
-
-            lesson.subtopics.forEach((sub, index) => {
-                const card = document.createElement('div');
-                card.className = "lesson-card bg-white p-6 md:p-8 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden";
-
-                // Dekorativ chap chiziq
-                const indicator = document.createElement('div');
-                indicator.className = "absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-400 to-indigo-600 rounded-l-2xl";
-
-                card.appendChild(indicator);
-
-                card.innerHTML += `
-                    <div class="flex items-start gap-4">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold font-sans text-sm border border-blue-100 mt-1">
-                            ${index + 1}
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-800 mb-3">${sub.title}</h3>
-                            <p class="text-slate-600 leading-relaxed">${sub.content}</p>
-                            
-                            <!-- Interaktiv 'Batafsil' tugmasi (shunchaki UI uchun) -->
-                            <button class="mt-4 text-sm font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors group">
-                                O'qishni boshlash
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                subtopicsContainer.appendChild(card);
+            
+            // Animatsiyani qayta ishga tushirish qismi
+            const transitionElements = document.querySelectorAll('.content-transition');
+            transitionElements.forEach(el => {
+                el.classList.remove('animate-fade-in-up');
+                void el.offsetWidth; // trigger reflow
+                el.classList.add('animate-fade-in-up');
             });
 
-            // Tugmalar holatini yangilash
-            document.getElementById('prev-btn').disabled = (id === 1);
-            document.getElementById('next-btn').disabled = (id === lessonsData.length);
+            // Sarlavhalarni yangilash
+            setTimeout(() => {
+                badge.textContent = `${lesson.id}-DARS`;
+                title.textContent = lesson.mainTitle;
+                
+                // Progress barni yangilash
+                const progressPercentage = Math.round((lesson.id / lessonsData.length) * 100);
+                document.getElementById('progress-bar').style.width = `${progressPercentage}%`;
+                document.getElementById('progress-text').textContent = `${progressPercentage}%`;
 
-            // Menyudagi aktiv holatni yangilash
-            updateActiveState(id);
+                // Kichik mavzularni chizish
+                subtopicsContainer.innerHTML = '';
+                
+                lesson.subtopics.forEach((sub, index) => {
+                    const card = document.createElement('div');
+                    card.className = "lesson-card bg-white p-6 md:p-8 rounded-2xl border border-slate-100 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.05)] relative overflow-hidden group";
+                    
+                    // Dekorativ orqa fon ikonka (juda xira)
+                    card.innerHTML += `
+                        <div class="absolute -right-6 -top-6 text-slate-50 opacity-50 transform group-hover:scale-110 transition-transform duration-500 pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        </div>
+                        <div class="flex items-start gap-5 relative z-10">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center font-bold font-sans text-lg border border-primary-100 shadow-sm mt-1">
+                                0${index + 1}
+                            </div>
+                            <div>
+                                <h3 class="text-xl md:text-2xl font-bold text-slate-800 mb-3 leading-snug">${sub.title}</h3>
+                                <p class="text-slate-600 text-lg leading-relaxed">${sub.content}</p>
+                                
+                                <button class="mt-5 text-sm font-bold font-sans text-primary-600 hover:text-primary-800 flex items-center gap-1.5 transition-colors group/btn">
+                                    O'qishni boshlash
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform group-hover/btn:translate-x-1.5 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    subtopicsContainer.appendChild(card);
+                });
 
-            // Yuqoriga qaytarish
-            document.getElementById('main-content').scrollTop = 0;
+                // Tugmalar holatini yangilash
+                document.getElementById('prev-btn').disabled = (id === 1);
+                document.getElementById('next-btn').disabled = (id === lessonsData.length);
+
+                // Menyudagi aktiv holatni yangilash
+                updateActiveState(id);
+                
+                // Yuqoriga qaytarish smoothly
+                document.getElementById('main-content').scrollTo({ top: 0, behavior: 'smooth' });
+            }, 50); // Animatsiya boshlanishiga ozgina vaqt berish
         }
 
         // Menyudagi aktiv dars ranglarini yangilash
         function updateActiveState(id) {
-            const allItems = document.querySelectorAll('#nav-container button');
-            allItems.forEach(item => {
-                item.classList.remove('active-nav-item', 'bg-blue-50');
-                // Ichidagi text ranglarini default qilish
-                const span1 = item.querySelector('span:first-child');
-                const span2 = item.querySelector('span:last-child');
-                if (span1 && span2) {
-                    span1.className = `text-xs font-bold uppercase tracking-wider mb-1 text-slate-400`;
-                    span2.className = `truncate w-full leading-relaxed text-slate-600`;
+            // Sidebar ro'yxatini to'liq qayta chizib qo'yish eng toza usul
+            renderSidebar();
+            
+            setTimeout(() => {
+                const activeItem = document.querySelector(`.nav-item-${id}`);
+                if(activeItem) {
+                    activeItem.scrollIntoView({ behavior: "smooth", block: "center" });
                 }
-            });
-
-            const activeItem = document.querySelector(`.nav-item-${id}`);
-            if (activeItem) {
-                activeItem.classList.add('active-nav-item');
-                // Aktiv holatdagi text ranglari
-                const span1 = activeItem.querySelector('span:first-child');
-                const span2 = activeItem.querySelector('span:last-child');
-                if (span1 && span2) {
-                    span1.className = `text-xs font-bold uppercase tracking-wider mb-1 text-blue-600`;
-                    span2.className = `truncate w-full leading-relaxed text-blue-700 font-semibold`;
-                }
-
-                // Menyuni avtomatik pastga surish (scroll into view)
-                activeItem.scrollIntoView({ behavior: "smooth", block: "nearest" });
-            }
+            }, 100);
         }
 
         // Mobil menyu uchun ochish/yopish funksiyasi
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-overlay');
-
-            if (sidebar.classList.contains('-translate-x-full')) {
+            
+            if(sidebar.classList.contains('-translate-x-full')) {
                 sidebar.classList.remove('-translate-x-full');
                 overlay.classList.remove('hidden');
+                // Sal kuttirib opacity qo'shish animatsiya uchun
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
             } else {
                 sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
             }
         }
     </script>
 </body>
-
 </html>
